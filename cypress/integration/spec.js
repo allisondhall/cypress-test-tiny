@@ -4,17 +4,36 @@ describe('Non-deterministic test', () => {
 
     cy.route({
     	method: 'GET',
-    	url: '/todos/*'
-    }).as('testCall');
+    	url: '/api/users*'
+    }).as('listUsers');
+
+    cy.route({
+    	method: 'GET',
+    	url: '/api/users/*'
+    }).as('singleUser');
   });
 
   it('Trigger API call multiple times', () => {
     cy.visit('/');
+	cy.wait('@listUsers');
 
-    cy.contains('Make an API call').click();
-    cy.wait('@testCall'); // Fails here despite call appearing in Network tab
+	cy.get('.endpoints ul').scrollIntoView();
+    cy.get('.endpoints ul li:nth-of-type(1)').click();
+    cy.wait('@listUsers');
 
-    cy.contains('Make an API call').click();
-    cy.wait('@testCall');
+    cy.get('.endpoints ul li:nth-of-type(2)').click();
+    cy.wait('@singleUser');
+
+    cy.get('.endpoints ul li:nth-of-type(1)').click();
+    cy.wait('@listUsers');
+
+    cy.get('.endpoints ul li:nth-of-type(2)').click();
+    cy.wait('@singleUser');
+
+    cy.get('.endpoints ul li:nth-of-type(1)').click();
+    cy.wait('@listUsers');
+
+    cy.get('.endpoints ul li:nth-of-type(2)').click();
+    cy.wait('@singleUser');
   });
 });
